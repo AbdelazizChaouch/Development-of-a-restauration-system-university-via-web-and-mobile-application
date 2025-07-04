@@ -1,0 +1,1 @@
+router.get('/count/active', universityCardController.getActiveCardsCount); 

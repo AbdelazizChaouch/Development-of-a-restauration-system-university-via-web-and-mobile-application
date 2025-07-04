@@ -1,0 +1,313 @@
+import React, { useState, useEffect } from 'react';
+import { UniversityCardApi } from '../services/api.service';
+import { Button, TextField, Typography, Box, Paper, Alert, CircularProgress } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+
+interface CardBalanceManagerProps {
+  cardId: number;
+  initialBalance?: number;
+  onBalanceUpdated?: (newBalance: number) => void;
+}
+
+interface User {
+  id: string;
+  role: string;
+  name: string;
+}
+
+const CardBalanceManager: React.FC<CardBalanceManagerProps> = ({ 
+  cardId, 
+  initialBalance = 0,
+  onBalanceUpdated 
+}) => {
+  const [amount, setAmount] = useState<string>('');
+  const [balance, setBalance] = useState<number>(initialBalance);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  // Load user from localStorage
+  useEffect(() => {
+    try {
+      const userJson = localStorage.getItem('user');
+      if (userJson) {
+        const userData = JSON.parse(userJson);
+        setUser(userData);
+        console.log('User loaded in CardBalanceManager:', userData);
+      } else {
+        console.warn('No user found in localStorage');
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  }, []);
+
+  // Load current balance
+  useEffect(() => {
+    const fetchCardDetails = async () => {
+      try {
+        setLoading(true);
+        const card = await UniversityCardApi.getById(cardId);
+        setBalance(card.sold);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching card details:', error);
+        setError('Failed to load card balance');
+        setLoading(false);
+      }
+    };
+
+    fetchCardDetails();
+  }, [cardId]);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow positive numbers with up to 2 decimal places
+    const value = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(value) || value === '') {
+      setAmount(value);
+    }
+  };
+
+  const handleAddFunds = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      
+      // Debug authentication details
+      const userJson = localStorage.getItem('user');
+      const userData = userJson ? JSON.parse(userJson) : null;
+      
+      console.log('Authentication check before adding funds:');
+      console.log('- User from state:', user);
+      console.log('- User from localStorage:', userData);
+      console.log('- Card ID:', cardId);
+      console.log('- Amount:', amount);
+      
+      if (!userData || !userData.id) {
+        throw new Error('Authentication required. Please log in again.');
+      }
+      
+      console.log(`Attempting to add ${amount} to card ${cardId} as user role: ${userData.role || 'unknown'}`);
+      
+      // Prepare request data
+      const requestData = {
+        amount: parseFloat(amount),
+        operation: 'add'
+      };
+      
+      // Prepare headers with authentication
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-User-ID': userData.id.toString(),
+        'X-User-Role': userData.role || 'staff'
+      };
+      
+      console.log('Request headers:', headers);
+      console.log('Request body:', requestData);
+      
+      // Make direct fetch request
+      const response = await fetch(`http://localhost:5000/api/university-cards/${cardId}/balance`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(requestData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('Add funds response received:', responseData);
+      
+      // Get the new balance from the response
+      const newBalance = responseData.data?.new_balance || responseData.data?.sold || balance + parseFloat(amount);
+      
+      console.log(`New balance determined: ${newBalance}`);
+      
+      setBalance(newBalance);
+      setSuccess(`Successfully added $${parseFloat(amount).toFixed(2)} to card balance. New balance: $${newBalance.toFixed(2)}`);
+      setAmount('');
+      
+      if (onBalanceUpdated) {
+        onBalanceUpdated(newBalance);
+      }
+    } catch (error) {
+      console.error('Error adding funds:', error);
+      
+      // Extract error message from different possible error formats
+      let errorMessage = 'Failed to add funds';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = (error as any).message || JSON.stringify(error);
+      }
+      
+      // Add more context to the error message
+      if (user?.role === 'staff' && errorMessage.includes('permission')) {
+        errorMessage += '. Staff users can only add funds, not subtract them.';
+      } else if (!user) {
+        errorMessage = 'Authentication required. Please log in again.';
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubtractFunds = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
+    if (parseFloat(amount) > balance) {
+      setError('Insufficient funds on card');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      
+      console.log(`Attempting to subtract ${amount} from card ${cardId} as user role: ${user?.role || 'unknown'}`);
+      
+      if (user?.role !== 'admin') {
+        throw new Error('Permission denied: Only administrators can subtract funds from cards');
+      }
+      
+      const response = await UniversityCardApi.subtractFunds(cardId, parseFloat(amount));
+      
+      console.log('Subtract funds response received:', response);
+      
+      // Cast response to any to handle different response structures
+      const responseAny = response as any;
+      const newBalance = responseAny.data?.new_balance || responseAny.new_balance || responseAny.sold || (balance - parseFloat(amount));
+      
+      console.log(`New balance determined: ${newBalance}`);
+      
+      setBalance(newBalance);
+      setSuccess(`Successfully subtracted $${parseFloat(amount).toFixed(2)} from card balance. New balance: $${newBalance.toFixed(2)}`);
+      setAmount('');
+      
+      if (onBalanceUpdated) {
+        onBalanceUpdated(newBalance);
+      }
+    } catch (error) {
+      console.error('Error subtracting funds:', error);
+      
+      // Extract error message from different possible error formats
+      let errorMessage = 'Failed to subtract funds';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = (error as any).message || JSON.stringify(error);
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Determine if user can add funds (admin or staff)
+  const canAddFunds = user && (user.role === 'admin' || user.role === 'staff');
+  
+  // Determine if user can subtract funds (admin only)
+  const canSubtractFunds = user && user.role === 'admin';
+
+  return (
+    <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+      <Typography variant="h6" gutterBottom>
+        Card Balance Manager
+      </Typography>
+      
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="body1">
+          Current Balance: <strong>${balance.toFixed(2)}</strong>
+        </Typography>
+      </Box>
+      
+      {(canAddFunds || canSubtractFunds) && (
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <TextField
+            label="Amount"
+            variant="outlined"
+            size="small"
+            value={amount}
+            onChange={handleAmountChange}
+            disabled={loading}
+            InputProps={{
+              startAdornment: <Box component="span" sx={{ mr: 1 }}>$</Box>,
+            }}
+            sx={{ mr: 2, width: '150px' }}
+          />
+          
+          {canAddFunds && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleAddFunds}
+              disabled={loading || !amount}
+              sx={{ mr: 1 }}
+            >
+              Add Funds
+            </Button>
+          )}
+          
+          {canSubtractFunds && (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<RemoveIcon />}
+              onClick={handleSubtractFunds}
+              disabled={loading || !amount || parseFloat(amount) > balance}
+            >
+              Subtract Funds
+            </Button>
+          )}
+          
+          {loading && <CircularProgress size={24} sx={{ ml: 2 }} />}
+        </Box>
+      )}
+      
+      {!canAddFunds && !canSubtractFunds && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          You have view-only access to card balances.
+        </Alert>
+      )}
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+          {success}
+        </Alert>
+      )}
+      
+      {user && (
+        <Typography variant="body2" color="textSecondary">
+          Logged in as: {user.name} ({user.role})
+        </Typography>
+      )}
+    </Paper>
+  );
+};
+
+export default CardBalanceManager; 

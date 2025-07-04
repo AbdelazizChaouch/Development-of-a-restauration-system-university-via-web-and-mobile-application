@@ -1,0 +1,330 @@
+/* Add Student Modal Styles */
+.add-student-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.add-student-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.add-student-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: left;
+}
+
+.add-student-error {
+  background-color: #FEE2E2;
+  color: #EF4444;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.add-student-success {
+  background-color: #DCFCE7;
+  color: #22C55E;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-icon {
+  margin-right: 8px;
+}
+
+.success-icon {
+  margin-right: 8px;
+}
+
+.add-student-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #6366F1;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.field-error {
+  color: #EF4444;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+.field-help {
+  color: #6B7280;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+.form-group input.error-input {
+  border-color: #EF4444;
+}
+
+.form-group input.error-input:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Upload button style */
+.upload-button {
+  position: absolute;
+  right: 10px;
+  top: 35px;
+  background-color: #6366F1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2;
+}
+
+.upload-button:hover {
+  background-color: #4F46E5;
+}
+
+.add-student-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  background-color: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.cancel-button:hover {
+  background-color: #f3f4f6;
+}
+
+.submit-button {
+  background-color: #6366F1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 120px;
+}
+
+.submit-button:hover {
+  background-color: #4F46E5;
+}
+
+.submit-button:disabled,
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dark theme styles */
+html.dark .add-student-container {
+  background-color: #1e293b;
+}
+
+html.dark .add-student-title {
+  color: #e2e8f0;
+}
+
+html.dark .add-student-error {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+html.dark .add-student-success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+html.dark .field-error {
+  color: #f87171;
+}
+
+html.dark .field-help {
+  color: #94a3b8;
+}
+
+html.dark .form-group label {
+  color: #94a3b8;
+}
+
+html.dark .form-group input {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+html.dark .form-group input:focus {
+  border-color: #818CF8;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+}
+
+html.dark .form-group input.error-input {
+  border-color: #f87171;
+}
+
+html.dark .form-group input.error-input:focus {
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+html.dark .upload-button {
+  background-color: #818CF8;
+}
+
+html.dark .upload-button:hover {
+  background-color: #6366F1;
+}
+
+html.dark .cancel-button {
+  color: #cbd5e1;
+  border-color: #475569;
+}
+
+html.dark .cancel-button:hover {
+  background-color: #334155;
+}
+
+html.dark .submit-button {
+  background-color: #818CF8;
+}
+
+html.dark .submit-button:hover {
+  background-color: #6366F1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .add-student-container {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  .upload-button {
+    position: relative;
+    right: auto;
+    top: auto;
+    margin-top: 10px;
+    width: 100%;
+  }
+}
+
+.form-note {
+  background-color: #F3F4F6;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #4B5563;
+  border-left: 3px solid #6366F1;
+}
+
+.form-note p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Dark theme */
+html.dark .form-note {
+  background-color: #1E293B;
+  color: #94A3B8;
+  border-left-color: #818CF8;
+}
+
+.input-with-status {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.checking-status {
+  position: absolute;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #6366F1;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* Dark theme */
+html.dark .checking-status {
+  color: #818CF8;
+} 

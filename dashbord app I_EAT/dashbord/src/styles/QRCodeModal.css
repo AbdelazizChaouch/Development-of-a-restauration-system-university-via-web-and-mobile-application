@@ -1,0 +1,236 @@
+/* QR Code Modal Styles */
+.qr-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.qr-modal-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 25px;
+  width: 100%;
+  max-width: 430px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.qr-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.qr-code-image-container {
+  margin: 15px auto 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.qr-code-image {
+  width: 320px;
+  height: 320px;
+  object-fit: contain;
+}
+
+.qr-info-container {
+  margin-bottom: 20px;
+}
+
+.qr-code-info {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+.qr-modal-actions {
+  margin-bottom: 16px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.download-qr-button {
+  background-color: #6366F1;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 180px;
+}
+
+.download-qr-button:hover {
+  background-color: #4F46E5;
+}
+
+.download-qr-button:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.download-qr-button.downloading {
+  background-color: #818CF8;
+}
+
+.download-notification {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #10B981;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeInOut 3s forwards;
+  white-space: nowrap;
+}
+
+.download-error-notification {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #EF4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeInOut 5s forwards;
+  white-space: nowrap;
+  max-width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.qr-modal-close {
+  border: none;
+  background: none;
+  color: #6366F1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+  position: absolute;
+  bottom: 15px;
+  right: 25px;
+}
+
+.qr-modal-close:hover {
+  text-decoration: underline;
+}
+
+.view-history-button {
+  background-color: transparent;
+  color: #6366F1;
+  border: 1px solid #6366F1;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 180px;
+}
+
+.view-history-button:hover {
+  background-color: #EEF2FF;
+}
+
+/* Dark theme adjustments */
+html.dark .qr-modal-container {
+  background-color: #1e293b;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .qr-modal-title {
+  color: #e2e8f0;
+}
+
+html.dark .qr-code-info {
+  color: #94a3b8;
+}
+
+html.dark .download-qr-button {
+  background-color: #818CF8;
+}
+
+html.dark .download-qr-button:hover {
+  background-color: #6366F1;
+}
+
+html.dark .download-qr-button:disabled {
+  background-color: #6366F1;
+  opacity: 0.6;
+}
+
+html.dark .download-notification {
+  background-color: #059669;
+}
+
+html.dark .download-error-notification {
+  background-color: #DC2626;
+}
+
+html.dark .qr-modal-close {
+  color: #818CF8;
+}
+
+html.dark .view-history-button {
+  color: #818CF8;
+  border-color: #818CF8;
+}
+
+html.dark .view-history-button:hover {
+  background-color: rgba(129, 140, 248, 0.1);
+}
+
+.qr-code-status {
+  margin: 0 0 15px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.qr-code-status.new-qr-code {
+  background-color: #EEF2FF;
+  color: #6366F1;
+  border-left: 3px solid #6366F1;
+}
+
+/* Dark theme */
+html.dark .qr-code-status.new-qr-code {
+  background-color: rgba(129, 140, 248, 0.1);
+  color: #818CF8;
+  border-left: 3px solid #818CF8;
+} 
